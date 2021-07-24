@@ -209,16 +209,28 @@ class WordDetection():
             raise "Cant_compare"
         for i in range(len(compare_word)):
             j = None
-            for k in range(0,len(compare_word)):    
-                if str(compare_word[i][0])[0:2] == str(compare_badword[k][0])[0:2]:
-                    if j is None:
-                        j = k
-                    elif abs(j-i) > abs(k-i):
-                        j = k
-                    else:
-                        pass
+            for k in range(0,len(compare_word)):
+                if str(compare_word[i][0])[0] == '3':
+                    if str(compare_badword[k][0])[0] == '3':
+                        if j is None:
+                            j = k
+                        elif abs(j-i) > abs(k-i):
+                            j = k
+                        else:
+                            pass
+                else:
+                    if str(compare_word[i][0])[0:2] == str(compare_badword[k][0])[0:2]:
+                        if j is None:
+                            j = k
+                        elif abs(j-i) > abs(k-i):
+                            j = k
+                        else:
+                            pass
             if j is not None:
-                a += 0.1 / pow(2, (abs(j - i)))*(10-abs(int(str(compare_word[i][0])[2])-int(str(compare_badword[j][0])[2])))
+                if str(compare_word[i][0])[0] == '3':
+                    a += 0.01 / pow(2, (abs(j - i)))*(100-abs(compare_word[i][0]-compare_badword[j][0]))
+                else:
+                    a += 0.1 / pow(2, (abs(j - i)))*(10-abs(int(str(compare_word[i][0])[2])-int(str(compare_badword[j][0])[2])))
         same = a / len(compare_badword)
         return same
         
@@ -266,19 +278,20 @@ if __name__ =='__main__':
         a.AddBW(line[0:-1])
     f.close()
     a.TokenBW()
-    a.input=input('필터링할 문장 입력!!')
-    stime = time.time()
-    a.W2NR()
-    a.lime_compare(a.BwT , a.WTD , 0.9)
-    print(f'테스트 문장 : {a.input}')
-    b = 1
-    for i in a.result:
-        print('      레이어      ',b)
-        for j in i:
-            print(f'{a.input[j[0]:j[1]+1]}  :  ("{j[3]}"일 확률 {round(j[2]*100)}%)')
-        b += 1
-    print('소요시간 : ',time.time()-stime,'초')
-    print("\n ==================== \n")
+    while True:
+        a.input=input('필터링할 문장 입력!!')
+        stime = time.time()
+        a.W2NR()
+        a.lime_compare(a.BwT , a.WTD , 0.9)
+        print(f'테스트 문장 : {a.input}')
+        b = 1
+        for i in a.result:
+            print('      레이어      ',b)
+            for j in i:
+                print(f'{a.input[j[0]:j[1]+1]}  :  ("{j[3]}"일 확률 {round(j[2]*100)}%)')
+            b += 1
+        print('소요시간 : ',time.time()-stime,'초')
+        print("\n ==================== \n")
         
         
         
