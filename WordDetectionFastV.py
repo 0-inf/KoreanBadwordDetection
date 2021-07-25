@@ -129,40 +129,6 @@ class WordDetection():
             for j in detach_word(result[i]):
                 result1.append(j)
         result = result1
-        """
-        coding 하기
-        """
-        """
-        result1 = [[],[],[]]
-        for i in result:
-            if i[0] in self.BaseL:
-                result1[0].append((self.BaseL[i[0]],i[1]))
-                result1[1].append((self.BaseL[i[0]],i[1]))
-                result1[2].append((self.BaseL[i[0]],i[1]))
-            else:
-                if i[0] in self.SeemL:
-                    result1[0].append((self.SeemL[i[0]],i[1]))
-                else:   
-                    if i[0] in self.PronL:
-                        result1[0].append((self.PronL[i[0]],i[1]))
-                    elif i[0] in self.KeBoL:
-                        result1[0].append((self.KeBoL[i[0]],i[1]))
-                                
-                if i[0] in self.KeBoL:
-                    result1[1].append((self.KeBoL[i[0]],i[1]))
-                else:
-                    if i[0] in self.SeemL:
-                        result1[1].append((self.SeemL[i[0]],i[1]))
-                    elif i[0] in self.PronL:
-                        result1[1].append((self.PronL[i[0]],i[1]))
-                if i[0] in self.PronL:
-                    result1[2].append((self.PronL[i[0]],i[1]))
-                else:
-                    if i[0] in self.SeemL:
-                        result1[2].append((self.SeemL[i[0]],i[1]))
-                    elif i[0] in self.KeBoL:
-                        result1[2].append((self.KeBoL[i[0]],i[1]))
-        """
         result1 = [[],[],[]]
         for i in result:
             if i[0] in self.SeemL or i[0] in self.KeBoL or i[0] in self.PronL:
