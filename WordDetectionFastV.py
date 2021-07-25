@@ -265,13 +265,7 @@ if __name__ =='__main__':
     import time
     a = WordDetection()
     a.LoadData()
-    f=open("Hard.txt",'r',encoding="utf-8")
-    while True:
-        line = f.readline()
-        if not line: break
-        a.AddBW(line[0:-1])
-    f.close()
-    f=open("Soft.txt",'r',encoding="utf-8")
+    f=open("Badwords.txt",'r',encoding="utf-8")
     while True:
         line = f.readline()
         if not line: break
