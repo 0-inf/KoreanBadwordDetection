@@ -16,8 +16,7 @@ def detach_word(word):
     result = []
     askicode = ord(word[0]) - 44032
     if -1 < askicode and askicode < 11173:
-        if not korean_one[askicode // 588] == 'ㅇ':
-            result.append([korean_one[askicode // 588],word[1]])
+        result.append([korean_one[askicode // 588],word[1]])
         result.append([korean_two[(askicode // 28) % 21],word[1]])
         if korean_three[askicode % 28] == '':
             pass
