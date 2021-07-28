@@ -176,27 +176,15 @@ class WordDetection():
         for i in range(len(compare_word)):
             j = None
             for k in range(0,len(compare_word)):
-                if str(compare_word[i][0])[0] == '3':
-                    if str(compare_badword[k][0])[0] == '3':
-                        if j is None:
-                            j = k
-                        elif abs(j-i) > abs(k-i):
-                            j = k
-                        else:
-                            pass
-                else:
-                    if str(compare_word[i][0])[0:2] == str(compare_badword[k][0])[0:2]:
-                        if j is None:
-                            j = k
-                        elif abs(j-i) > abs(k-i):
-                            j = k
-                        else:
-                            pass
+                if str(compare_word[i][0])[0:2] == str(compare_badword[k][0])[0:2]:
+                    if j is None:
+                        j = k
+                    elif abs(j-i) > abs(k-i):
+                        j = k
+                    else:
+                        pass
             if j is not None:
-                if str(compare_word[i][0])[0] == '3':
-                    a += 0.01 / pow(2, (abs(j - i)))*(100-abs(compare_word[i][0]-compare_badword[j][0]))
-                else:
-                    a += 0.1 / pow(2, (abs(j - i)))*(10-abs(int(str(compare_word[i][0])[2])-int(str(compare_badword[j][0])[2])))
+                a += 0.1 / pow(2, (abs(j - i)))*(10-abs(int(str(compare_word[i][0])[2])-int(str(compare_badword[j][0])[2])))
         same = a / len(compare_badword)
         return same
         
