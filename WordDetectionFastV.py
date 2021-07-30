@@ -128,7 +128,7 @@ class WordDetection():
             for j in detach_word(result[i]):
                 result1.append(j)
         result = result1
-        result1 = [[],[],[]]
+        result1 = [[],[],[],[]]
         for i in result:
             if i[0] in self.SeemL or i[0] in self.KeBoL or i[0] in self.PronL:
                 if i[0] in self.SeemL:
@@ -156,6 +156,7 @@ class WordDetection():
                 result1[0].append((self.BaseL[i[0]],i[1]))
                 result1[1].append((self.BaseL[i[0]],i[1]))
                 result1[2].append((self.BaseL[i[0]],i[1]))
+                result1[3].append((self.BaseL[i[0]],i[1]))
             else:
                 pass
             
@@ -204,7 +205,7 @@ class WordDetection():
                     comparewordstart = cw[j]
                     comparewordend = cw[(j+len(badi))-1]
                     in_list = (comparewordstart[1],comparewordend[1],a,self.BwNt[i])
-                    if a>cut_line and comparewordstart[1] not in c:
+                    if a>=cut_line and comparewordstart[1] not in c:
                         c[comparewordstart[1]] = (a,in_list)
                         b.append(in_list)
                     elif comparewordstart[1] in c and c[comparewordstart[1]][0] < a:
