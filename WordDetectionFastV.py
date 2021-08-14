@@ -26,6 +26,12 @@ def detach_word(word):
         result.append(word)
     return result
 
+def MakeBetter(x:int):
+    """
+    글자수가 짧을 수록 더 엄격하게 확률을 적용합니다
+    """
+    return 0.1**((x-3)/10)+1
+
 
 class WordDetection():
 
@@ -186,7 +192,8 @@ class WordDetection():
             if j is not None:
                 a += 0.1 / pow(2, (abs(j - i)))*(10-abs(int(str(compare_word[i][0])[2])-int(str(compare_badword[j][0])[2])))
         same = a / len(compare_badword)
-        return same
+        better = MakeBetter(len(compare_word))
+        return same ** better
         
 
     def lime_compare(self, badwords , compare_word,cut_line):
@@ -230,7 +237,7 @@ if __name__ =='__main__':
         a.input=input('필터링할 문장 입력!!')
         stime = time.time()
         a.W2NR()
-        a.lime_compare(a.BwT , a.WTD , 0.9)
+        a.lime_compare(a.BwT , a.WTD , 0.5)
         print(f'테스트 문장 : {a.input}')
         b = 1
         for i in a.result:
