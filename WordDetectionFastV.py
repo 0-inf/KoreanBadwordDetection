@@ -233,11 +233,12 @@ if __name__ =='__main__':
         a.AddBW(line[0:-1])
     f.close()
     a.TokenBW()
+    cutline = int(input("몇 %이상인 것만 출력할까요?"))
     while True:
         a.input=input('필터링할 문장 입력!!')
         stime = time.time()
         a.W2NR()
-        a.lime_compare(a.BwT , a.WTD , 0.5)
+        a.lime_compare(a.BwT , a.WTD , cutline/100)
         print(f'테스트 문장 : {a.input}')
         b = 1
         for i in a.result:
