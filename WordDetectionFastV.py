@@ -16,7 +16,8 @@ def detach_word(word):
     result = []
     askicode = ord(word[0]) - 44032
     if -1 < askicode and askicode < 11173:
-        result.append([korean_one[askicode // 588],word[1]])
+        if askicode // 588 != 11:
+            result.append([korean_one[askicode // 588],word[1]])
         result.append([korean_two[(askicode // 28) % 21],word[1]])
         if korean_three[askicode % 28] == '':
             pass
@@ -239,14 +240,17 @@ if __name__ =='__main__':
         stime = time.time()
         a.W2NR()
         a.lime_compare(a.BwT , a.WTD , cutline/100)
-        print(f'테스트 문장 : {a.input}')
+        print(f'테스트 문장 : {a.input}\n{cutline}%이상 일치하는 부분만 출력')
         b = 1
+        word = a.input
         for i in a.result:
             print('      레이어      ',b)
             for j in i:
+                word = word[:j[0]]+'*'*(j[1]-j[0]+1)+word[j[1]+1:]
                 print(f'{a.input[j[0]:j[1]+1]}  :  ("{j[3]}"일 확률 {round(j[2]*100)}%)')
             b += 1
         print('소요시간 : ',time.time()-stime,'초')
+        print('필터링된 문장 : ',word)
         print("\n ==================== \n")
         
         
