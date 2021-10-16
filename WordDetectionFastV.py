@@ -55,7 +55,9 @@ class WordDetection():
         self.BwNt = [] #Token화가 되지않은 badword의 리스트
         self.BwT = [] #Token 화가 완료된 badword의 리스트
         self.Result = [] #결과 값
-        self.NewBwT = [] # Token화가 된 문자열의 초성 리스트
+        self.NewBwNT = [] # Token화가 된 문자열의 초성 리스트
+        self.NewBwT = []
+
         
 
     def LoadData(self , respon = False):
@@ -72,6 +74,21 @@ class WordDetection():
             return [self.BaseL , self.SeemL , self.KeBoL , self.PronL]
         else:
             return None
+    
+    def LoadBadWordData(self,file="Badwords.txt"):
+        """
+        욕설 데이터를 불러오고 자동으로 저장합니다.
+        file은 욕설 데이터를 불러올 경로입니다.
+        """
+        f=open(file,'r',encoding="utf-8")
+        while True:
+            line = f.readline()
+            if not line: break
+            a.AddBW(line[0:-1])
+        f.close()
+        self.TokenBW()
+
+
 
     def AddBW(self , badword:str , respon = False):
         """
@@ -85,10 +102,12 @@ class WordDetection():
             return None
         elif badword.startswith('$'):
             # 이건 초성
-            self.NewBwT.append(badword[1:])
+            if badword[1:] not in self.NewBwNT:
+                self.NewBwNT.append(badword[1:])
             return None
         else:
-            self.BwNt.append(badword)
+            if badword not in self.BwNt:
+                self.BwNt.append(badword)
             if respon is True:
                 return badword
             else:
@@ -111,10 +130,11 @@ class WordDetection():
         self.BwT = result
         result = []
 
-        for i in self.NewBwT:
+        for i in self.NewBwNT:
             ilist = []
             for j in range(0,len(i)):
                 ilist.append([self.BaseL[i[j]],j])
+            result.append(ilist)
         self.NewBwT = result
 
         if respon is True:
@@ -150,7 +170,7 @@ class WordDetection():
         new_layer=[]  #초성의 번호
         for i in range(0,len(result)):
             de = detach_word(result[i])
-            if len(de)==1:new_layer.append(len(result1))
+            if len(de)==1 and de[0][0] not in korean_two:new_layer.append(len(result1))
             for j in de:
                 result1.append(j)
         result = result1
@@ -226,7 +246,7 @@ class WordDetection():
         return same ** better
         
 
-    def lime_compare(self, badwords , compare_word,cut_line):
+    def lime_compare(self, badwords , compare_word,cut_line,New):
         """
         compare_word 와 badwords를 비교합니다
         """
@@ -241,7 +261,10 @@ class WordDetection():
                     a = self.word_comparing(cw[j:(j+len(badi))],badi)
                     comparewordstart = cw[j]
                     comparewordend = cw[(j+len(badi))-1]
-                    in_list = (comparewordstart[1],comparewordend[1],a,self.BwNt[i])
+                    if New:
+                        in_list = (comparewordstart[1],comparewordend[1],a,self.NewBwNT[i])
+                    else:
+                        in_list = (comparewordstart[1],comparewordend[1],a,self.BwNt[i])
                     if a>=cut_line and comparewordstart[1] not in c:
                         c[comparewordstart[1]] = (a,in_list)
                         b.append(in_list)
@@ -257,22 +280,16 @@ if __name__ =='__main__':
     import time
     a = WordDetection()
     a.LoadData()
-    f=open("Badwords.txt",'r',encoding="utf-8")
-    while True:
-        line = f.readline()
-        if not line: break
-        a.AddBW(line[0:-1])
-    f.close()
-    a.TokenBW()
+    a.LoadBadWordData()
     cutline = int(input("몇 %이상인 것만 출력할까요?"))
     sf = 3
     while sf!=0:
         a.input=input('필터링할 문장 입력!!')
         stime = time.time()
         a.W2NR()
-        a.lime_compare(a.BwT , a.WTD[0] , cutline/100)
+        a.lime_compare(a.BwT , a.WTD[0] , cutline/100,False)
         result = a.result
-        a.lime_compare(a.NewBwT, a.WTD[1], cutline/100)
+        a.lime_compare(a.NewBwT, a.WTD[1], cutline/100,True)
         result += a.result
         print(f'테스트 문장 : {a.input}\n{cutline}%이상 일치하는 부분만 출력')
         b = 1
