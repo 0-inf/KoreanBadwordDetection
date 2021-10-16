@@ -27,11 +27,6 @@ def detach_word(word):
         result.append(word)
     return result
 
-def MakeBetter(x:int):
-    """
-    글자수가 짧을 수록 더 엄격하게 확률을 적용합니다
-    """
-    return 0.1**((x-3)/10)+1
 
 
 class WordDetection():
@@ -55,6 +50,7 @@ class WordDetection():
         self.BwNt = [] #Token화가 되지않은 badword의 리스트
         self.BwT = [] #Token 화가 완료된 badword의 리스트
         self.Result = [] #결과 값
+        self.NewBwT = [] # Token화가 된 문자열의 초성 리스트
         
 
     def LoadData(self , respon = False):
@@ -82,6 +78,10 @@ class WordDetection():
         elif badword.startswith('#'):
             # '#'으로 시작되는 줄은 주석임
             return None
+        elif badword.startswith('$'):
+            # 이건 초성
+            self.NewBwT.append(badword[1:])
+            return None
         else:
             self.BwNt.append(badword)
             if respon is True:
@@ -104,6 +104,14 @@ class WordDetection():
                         iList.append(Dj[k])
             result.append(iList)
         self.BwT = result
+        result = []
+
+        for i in self.NewBwT:
+            ilist = []
+            for j in range(0,len(i)):
+                ilist.append([self.BaseL[i[j]],j])
+        self.NewBwT = result
+
         if respon is True:
             return result
         else:
@@ -134,25 +142,34 @@ class WordDetection():
         초성 , 중성 ,종성 분리하기
         """
         result1 = []
+        new_layer=[]  #초성의 번호
         for i in range(0,len(result)):
-            for j in detach_word(result[i]):
+            de = detach_word(result[i])
+            if len(de)==1:new_layer.append(len(result1))
+            for j in de:
                 result1.append(j)
         result = result1
         result1 = [[],[],[],[]]
-        for i in result:
+        new_re = [[],[],[]]
+        for j in range(0,len(result)):
+            i = result[j]
             if i[0] in self.SeemL or i[0] in self.KeBoL or i[0] in self.PronL:
                 if i[0] in self.SeemL:
                     result1[0].append((self.SeemL[i[0]],i[1]))
+                    if j in new_layer:new_re[0].append((self.SeemL[i[0]],i[1]))
                 else:
                     if i[0] in self.PronL:
                         result1[0].append((self.PronL[i[0]],i[1]))
                     elif i[0] in self.KeBoL:
                         result1[0].append((self.KeBoL[i[0]],i[1]))
+                        if j in new_layer:new_re[1].append((self.KeBoL[i[0]],i[1]))
                 if i[0] in self.KeBoL:
                     result1[1].append((self.KeBoL[i[0]],i[1]))
+                    if j in new_layer:new_re[1].append((self.KeBoL[i[0]],i[1]))
                 else:
                     if i[0] in self.SeemL:
                         result1[1].append((self.SeemL[i[0]],i[1]))
+                        if j in new_layer:new_re[0].append((self.SeemL[i[0]],i[1]))
                     elif i[0] in self.PronL:
                         result1[1].append((self.PronL[i[0]],i[1]))
                 if i[0] in self.PronL:
@@ -167,12 +184,16 @@ class WordDetection():
                 result1[1].append((self.BaseL[i[0]],i[1]))
                 result1[2].append((self.BaseL[i[0]],i[1]))
                 result1[3].append((self.BaseL[i[0]],i[1]))
+                if j in new_layer:
+                    new_re[0].append((self.BaseL[i[0]],i[1]))
+                    new_re[1].append((self.BaseL[i[0]],i[1]))
+                    new_re[2].append((self.BaseL[i[0]],i[1]))
             else:
                 pass
             
                 
         result = result1
-        self.WTD = result
+        self.WTD = [result,new_re]
         return None
 
     def word_comparing(self , compare_word , compare_badword):
@@ -196,8 +217,7 @@ class WordDetection():
             if j is not None:
                 a += 0.1 / pow(2, (abs(j - i)))*(10-abs(int(str(compare_word[i][0])[2])-int(str(compare_badword[j][0])[2])))
         same = a / len(compare_badword)
-        better = MakeBetter(len(compare_word))
-        return same ** better
+        return same
         
 
     def lime_compare(self, badwords , compare_word,cut_line):
@@ -222,6 +242,7 @@ class WordDetection():
                     elif comparewordstart[1] in c and c[comparewordstart[1]][0] < a:
                         b.remove(c[comparewordstart[1]][1])
                         b.append(in_list)
+                        c[comparewordstart[1]] = (a,in_list)
             result.append(b)
         self.result = result
         return result        
@@ -238,15 +259,19 @@ if __name__ =='__main__':
     f.close()
     a.TokenBW()
     cutline = int(input("몇 %이상인 것만 출력할까요?"))
-    while True:
+    sf = 1
+    while sf!=0:
         a.input=input('필터링할 문장 입력!!')
         stime = time.time()
         a.W2NR()
-        a.lime_compare(a.BwT , a.WTD , cutline/100)
+        a.lime_compare(a.BwT , a.WTD[0] , cutline/100)
+        result = a.result
+        a.lime_compare(a.NewBwT, a.WTD[1], cutline/100)
+        result += a.result
         print(f'테스트 문장 : {a.input}\n{cutline}%이상 일치하는 부분만 출력')
         b = 1
         word = a.input
-        for i in a.result:
+        for i in result:
             print('      레이어      ',b)
             for j in i:
                 word = word[:j[0]]+'*'*(j[1]-j[0]+1)+word[j[1]+1:]
@@ -255,6 +280,7 @@ if __name__ =='__main__':
         print('소요시간 : ',time.time()-stime,'초')
         print('필터링된 문장 : ',word)
         print("\n ==================== \n")
+        sf-=1
         
         
         
