@@ -8,7 +8,7 @@ korean_one = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ',
 korean_two = ['ㅏ','ㅐ','ㅑ','ㅒ','ㅓ','ㅔ','ㅕ','ㅖ','ㅗ','ㅘ','ㅙ','ㅚ','ㅛ','ㅜ','ㅝ','ㅞ','ㅟ','ㅠ','ㅡ','ㅢ','ㅣ'] # 한글 중성
 korean_three = ['','ㄱ','ㄲ','ㄳ','ㄴ','ㄵ','ㄶ','ㄷ','ㄹ','ㄺ','ㄻ','ㄼ','ㄽ','ㄾ','ㄿ','ㅀ','ㅁ','ㅂ','ㅄ','ㅅ','ㅆ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'] # 한글 종성
 
-def detach_word(word):
+def detach_word(word,before):
     """
     word에 한글이 입력되면 초성,중성,종성으로 쪼개줍니다
     한글이 아니면 그냥 넘김니다
@@ -16,7 +16,14 @@ def detach_word(word):
     result = []
     askicode = ord(word[0]) - 44032
     if -1 < askicode and askicode < 11173:
-        if askicode // 588 != 11:
+        if askicode // 588 == 11:
+            if len(before) > 0 and before[-1] in korean_two and before[-1]==korean_two[(askicode // 28) % 21]:
+                pass
+            elif len(before) > 1 and before[-2] in korean_two and before[-2]==korean_two[(askicode // 28) % 21]:
+                pass
+            else:
+                result.append([korean_one[askicode // 588],word[1]])
+        else:
             result.append([korean_one[askicode // 588],word[1]])
         result.append([korean_two[(askicode // 28) % 21],word[1]])
         if korean_three[askicode % 28] == '':
@@ -121,7 +128,7 @@ class WordDetection():
         for i in self.BwNt:
             iList = []
             for j in range(0,len(i)):
-                Dj = detach_word([i[j],j])
+                Dj = detach_word([i[j],j],iList)
                 for k in range(0,len(Dj)):
                     if Dj[k][0] in self.BaseL:
                         Dj[k][0] = self.BaseL[Dj[k][0]]
@@ -169,7 +176,7 @@ class WordDetection():
         result1 = []
         new_layer=[]  #초성의 번호
         for i in range(0,len(result)):
-            de = detach_word(result[i])
+            de = detach_word(result[i],result1)
             if len(de)==1 and de[0][0] not in korean_two:new_layer.append(len(result1))
             for j in de:
                 result1.append(j)
