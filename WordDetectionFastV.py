@@ -222,7 +222,8 @@ class WordDetection():
             if j is not None:
                 a += 0.1 / pow(2, (abs(j - i)))*(10-abs(int(str(compare_word[i][0])[2])-int(str(compare_badword[j][0])[2])))
         same = a / len(compare_badword)
-        return same ** MakeBetter(len(compare_badword))
+        better = MakeBetter(len(compare_badword))
+        return same ** better
         
 
     def lime_compare(self, badwords , compare_word,cut_line):
@@ -264,7 +265,7 @@ if __name__ =='__main__':
     f.close()
     a.TokenBW()
     cutline = int(input("몇 %이상인 것만 출력할까요?"))
-    sf = 1
+    sf = 3
     while sf!=0:
         a.input=input('필터링할 문장 입력!!')
         stime = time.time()
