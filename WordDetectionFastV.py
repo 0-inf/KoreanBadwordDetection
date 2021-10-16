@@ -79,6 +79,9 @@ class WordDetection():
         """
         if badword in self.BwNt:
             return None
+        elif badword.startswith('#'):
+            # '#'으로 시작되는 줄은 주석임
+            return None
         else:
             self.BwNt.append(badword)
             if respon is True:
