@@ -65,7 +65,7 @@ class WordDetection():
 
     def LoadData(self , respon = False):
         """
-        각 layer들의 데이터를 로딩해옵니다
+        각 layer들의 데이터를 로딩해옵니다(WDLD.txt로부터 읽어옵니다)
         respon이 True일시에는 해당 레이어의 값들을 return 해줍니다.
         """
         with open('WDLD.txt', 'rb') as f:
