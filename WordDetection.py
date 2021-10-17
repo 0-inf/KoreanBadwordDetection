@@ -87,7 +87,7 @@ class WordDetection():
         while True:
             line = f.readline()
             if not line: break
-            a.AddBW(line[0:-1])
+            self.AddBW(line[0:-1])
         f.close()
         self.TokenBW()
 
