@@ -5,7 +5,7 @@ korean_one = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ',
 korean_two = ['ㅏ','ㅐ','ㅑ','ㅒ','ㅓ','ㅔ','ㅕ','ㅖ','ㅗ','ㅘ','ㅙ','ㅚ','ㅛ','ㅜ','ㅝ','ㅞ','ㅟ','ㅠ','ㅡ','ㅢ','ㅣ'] # 한글 중성
 korean_three = ['','ㄱ','ㄲ','ㄳ','ㄴ','ㄵ','ㄶ','ㄷ','ㄹ','ㄺ','ㄻ','ㄼ','ㄽ','ㄾ','ㄿ','ㅀ','ㅁ','ㅂ','ㅄ','ㅅ','ㅆ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'] # 한글 종성
 
-def detach_word(word : List[str,int],before : List) -> List:
+def detach_word(word : List,before : List) -> List:
     """
     한국어를 초성,중성,종성으로 분해해줍니다.
 
@@ -253,7 +253,7 @@ class WordDetection():
         return same ** better
         
 
-    def lime_compare(self, badwords : List = self.BwT, compare_word : List = self.WTD[0], cut_line : int = 0.9 , New : bool = False) -> List:
+    def lime_compare(self, badwords : List, compare_word : List, cut_line : int = 0.9 , New : bool = False) -> List:
         """
         compare_word와 badwords를 비교하여 욕설인 부분과 그 퍼센트를 리턴합니다
 
