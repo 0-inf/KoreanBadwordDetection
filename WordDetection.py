@@ -18,9 +18,9 @@ def detach_word(word : List,before : List) -> List:
     askicode = ord(word[0]) - 44032
     if -1 < askicode and askicode < 11173:
         if askicode // 588 == 11:
-            if len(before) > 0 and before[-1] in korean_two and before[-1]==korean_two[(askicode // 28) % 21]:
+            if len(before) > 0 and before[-1][0] in korean_two and before[-1][0]==korean_two[(askicode // 28) % 21]:
                 pass
-            elif len(before) > 1 and before[-2] in korean_two and before[-2]==korean_two[(askicode // 28) % 21]:
+            elif len(before) > 1 and before[-2][0] in korean_two and before[-2][0]==korean_two[(askicode // 28) % 21]:
                 pass
             else:
                 result.append([korean_one[askicode // 588],word[1]])
@@ -257,10 +257,9 @@ class WordDetection():
         :return: 욕설검사 결과를 리턴합니다.
         """
 
-        result = []
+        b = []
+        c={}
         for cw in compare_word:
-            b = []
-            c = {}
             for i in range(0,len(badwords)):
                 badi = badwords[i]
                 for j in range(len(cw)-len(badi)+1):
@@ -278,9 +277,8 @@ class WordDetection():
                         b.remove(c[comparewordstart[1]][1])
                         b.append(in_list)
                         c[comparewordstart[1]] = (a,in_list)
-            result.append(b)
-        self.result = result
-        return result        
+        self.result = b
+        return b       
                 
 if __name__ =='__main__':
     import time
@@ -297,16 +295,13 @@ if __name__ =='__main__':
         result = a.result
         a.lime_compare(a.NewBwT, a.WTD[1], cutline/100,True)
         result += a.result
-        print(f'테스트 문장 : {a.input}\n{cutline}%이상 일치하는 부분만 출력')
-        b = 1
+        print(f'테스트 문장 : {a.input}\n{cutline}%이상 일치하는 부분만 출력\n')
         word = a.input
-        for i in result:
-            print('      레이어      ',b)
-            for j in i:
-                word = word[:j[0]]+'*'*(j[1]-j[0]+1)+word[j[1]+1:]
-                print(f'{a.input[j[0]:j[1]+1]}  :  ("{j[3]}"일 확률 {round(j[2]*100)}%)')
-            b += 1
-        print('소요시간 : ',time.time()-stime,'초')
+        if len(result)==0: print(' > 감지된 욕설이 없습니다 <')
+        for j in result:
+            word = word[:j[0]]+'*'*(j[1]-j[0]+1)+word[j[1]+1:]
+            print(f' > {a.input[j[0]:j[1]+1]} < [{j[0]}~{j[1]}] :  ("{j[3]}"일 확률 {round(j[2]*100)}%)')
+        print('\n소요시간 : ',time.time()-stime,'초')
         print('필터링된 문장 : ',word)
         print("\n ==================== \n")
         sf-=1
