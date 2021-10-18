@@ -295,7 +295,7 @@ if __name__ =='__main__':
         result = a.result
         a.lime_compare(a.NewBwT, a.WTD[1], cutline/100,True)
         result += a.result
-        print(f'테스트 문장 : {a.input}\n{cutline}%이상 일치하는 부분만 출력\n')
+        print(f'{cutline}%이상 일치하는 부분만 출력\n')
         word = a.input
         if len(result)==0: print(' > 감지된 욕설이 없습니다 <')
         for j in result:
