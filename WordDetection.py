@@ -24,9 +24,10 @@ def detach_word(word : List,before : List) -> List:
                 pass
             else:
                 result.append([korean_one[askicode // 588],word[1]])
+                result.append([korean_two[(askicode // 28) % 21],word[1]])
         else:
             result.append([korean_one[askicode // 588],word[1]])
-        result.append([korean_two[(askicode // 28) % 21],word[1]])
+            result.append([korean_two[(askicode // 28) % 21],word[1]])
         if korean_three[askicode % 28] == '':
             pass
         else:
@@ -158,7 +159,7 @@ class WordDetection():
 
         :return: 아무것도 리턴하지 않습니다.
         """
-        PassList = [' ','이']
+        PassList = [' ']
         result = []
         word = self.input
         for i in range(len(word)):
