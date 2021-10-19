@@ -26,46 +26,43 @@
 
 ### 2. 모듈 적용하기
 
-WordDetection 모듈을 import 한후
-
 ```python
+import time
+from WordDetection import WordDetection
 a = WordDetection()
 a.LoadData()
 a.LoadBadWordData()
-a.input = '테스트 문장입니다'
+a.input='이곳에 테스트할 문장을 적어주세요!!'
+stime = time.time()
 a.W2NR()
-a.lime_compare(a.BwT , a.WTD[0] , cutline/100,False)
+a.lime_compare(a.BwT , a.WTD[0] , 0.9,False)
 result = a.result
-a.lime_compare(a.NewBwT, a.WTD[1], cutline/100,True)
+a.lime_compare(a.NewBwT, a.WTD[1], 0.9,True)
 result += a.result
+print('90%이상 일치하는 부분만 출력\n')
 word = a.input
-b=1
-for i in result:
-    print('      레이어      ',b)
-    for j in i:
-        word = word[:j[0]]+'*'*(j[1]-j[0]+1)+word[j[1]+1:]
-        print(f'{a.input[j[0]:j[1]+1]}  :  ("{j[3]}"일 확률 {round(j[2]*100)}%)')
-    b += 1
+if len(result)==0: print(' > 감지된 욕설이 없습니다 <')
+for j in result:
+    word = word[:j[0]]+'*'*(j[1]-j[0]+1)+word[j[1]+1:]
+    print(f' > {a.input[j[0]:j[1]+1]} < [{j[0]}~{j[1]}] :  ("{j[3]}"일 확률 {round(j[2]*100)}%)')
+print('\n소요시간 : ',time.time()-stime,'초')
 print('필터링된 문장 : ',word)
 print("\n ==================== \n")
 ```
 
 실행하면
 
-```cmd
-      레이어       1
-      레이어       2
-      레이어       3
-      레이어       4
-      레이어       5
-      레이어       6
-      레이어       7
-필터링된 문장 :  테스트 문장입니다
+```txt
+90%이상 일치하는 부분만 출력
 
- ====================
+ > 감지된 욕설이 없습니다 <
+
+소요시간 :  0.04871225357055664 초
+필터링된 문장 :  이곳에 테스트할 문장을 적어주세요!!
+
+====================
+
  ```
-
-> 욕설이 없기때문에 레이어 아래의 내용이 없습니다. 욕설이 있는 문장을 적으시면 정상적으로 표시됩니다.
 
 ## 궁금한게 있나요?
 
