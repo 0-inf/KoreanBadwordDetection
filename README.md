@@ -64,6 +64,12 @@ print("\n ==================== \n")
 
  ```
 
+## 모듈 사용 예시
+
+이 모듈을 이용하여 만든 디스코드 봇입니다.
+
+[소스코드](https://github.com/Seol7523/KoreanWordDetection/blob/main/example/WordDetectionBot.py)
+
 ## 궁금한게 있나요?
 
 이슈로 질문해주세요. 오류제보,건의사항 모두 감사하게 받겠습니다
