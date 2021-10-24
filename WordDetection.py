@@ -1,11 +1,19 @@
+"""한국어 욕설 필터링 모듈"""
+# python_file.py
+# -*- coding:utf-8 -*-
+
 import pickle
 from typing import List
 
-korean_one = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'] # 한글 초성
-korean_two = ['ㅏ','ㅐ','ㅑ','ㅒ','ㅓ','ㅔ','ㅕ','ㅖ','ㅗ','ㅘ','ㅙ','ㅚ','ㅛ','ㅜ','ㅝ','ㅞ','ㅟ','ㅠ','ㅡ','ㅢ','ㅣ'] # 한글 중성
-korean_three = ['','ㄱ','ㄲ','ㄳ','ㄴ','ㄵ','ㄶ','ㄷ','ㄹ','ㄺ','ㄻ','ㄼ','ㄽ','ㄾ','ㄿ','ㅀ','ㅁ','ㅂ','ㅄ','ㅅ','ㅆ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'] # 한글 종성
+korean_one = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ',
+              'ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ']
+korean_two = ['ㅏ','ㅐ','ㅑ','ㅒ','ㅓ','ㅔ','ㅕ','ㅖ','ㅗ','ㅘ',
+              'ㅙ','ㅚ','ㅛ','ㅜ','ㅝ','ㅞ','ㅟ','ㅠ','ㅡ','ㅢ','ㅣ']
+korean_three = ['','ㄱ','ㄲ','ㄳ','ㄴ','ㄵ','ㄶ','ㄷ','ㄹ','ㄺ',
+                'ㄻ','ㄼ','ㄽ','ㄾ','ㄿ','ㅀ','ㅁ','ㅂ','ㅄ','ㅅ',
+                'ㅆ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ']
 
-def detach_word(word : List,before : List) -> List:
+def detachword(word : List,before : List) -> List:
     """
     한국어를 초성,중성,종성으로 분해해줍니다.
 
@@ -55,14 +63,12 @@ class WordDetection():
         """
         초깃값을 설정합니다
         """
-        
+
         self.BaseL = {} #Base layer 데이터
         self.SeemL = {} #Seem layer 데이터
         self.KeBoL = {} #KeyBorad layer 데이터
         self.PronL = {} #Pro layer 데이터
 
-
-        
         self.input = '' # 입력된 문자열
         self.WTD = [] #Token 화 , Detach 모두 완료된 입력 문자열의 리스트
         self.BwNt = [] #Token화가 되지않은 badword의 리스트
@@ -70,8 +76,6 @@ class WordDetection():
         self.Result = [] #결과 값
         self.NewBwNT = [] # Token화가 안된 문자열의 초성 리스트
         self.NewBwT = [] # Token화가 된 문자열의 초성 리스트
-
-        
 
     def LoadData(self) -> None:
         """
@@ -85,18 +89,19 @@ class WordDetection():
             self.KeBoL = pickle.load(f)
             self.PronL = pickle.load(f)
         return None
-    
+
     def LoadBadWordData(self,file : str ="Badwords.txt") -> None:
         """
         욕설 데이터를 불러오고 자동으로 저장합니다.
-        
+
         :param file: 욕설 리스트 파일의 주소입니다.
         :return: 아무것도 리턴하지 않습니다.
         """
         f=open(file,'r',encoding="utf-8")
         while True:
             line = f.readline()
-            if not line: break
+            if not line:
+                break
             self.AddBW(line[0:-1])
         f.close()
         self.TokenBW()
@@ -136,7 +141,7 @@ class WordDetection():
         for i in self.BwNt:
             iList = []
             for j in range(0,len(i)):
-                Dj = detach_word([i[j],j],iList)
+                Dj = detachword([i[j],j],iList)
                 for k in range(0,len(Dj)):
                     if Dj[k][0] in self.BaseL:
                         Dj[k][0] = self.BaseL[Dj[k][0]]
@@ -176,8 +181,9 @@ class WordDetection():
         result1 = []
         new_layer=[]  #초성의 번호
         for i in range(0,len(result)):
-            de = detach_word(result[i],result1)
-            if len(de)==1 and de[0][0] not in korean_two:new_layer.append(len(result1))
+            de = detachword(result[i],result1)
+            if len(de)==1 and de[0][0] not in korean_two:
+                new_layer.append(len(result1))
             for j in de:
                 result1.append(j)
         result = result1
@@ -188,17 +194,20 @@ class WordDetection():
             if i[0] in self.SeemL or i[0] in self.KeBoL or i[0] in self.PronL:
                 if i[0] in self.SeemL:
                     result1[0].append((self.SeemL[i[0]],i[1]))
-                    if j in new_layer:new_re[0].append((self.SeemL[i[0]],i[1]))
+                    if j in new_layer:
+                        new_re[0].append((self.SeemL[i[0]],i[1]))
                 else:
                     if i[0] in self.PronL:
                         result1[0].append((self.PronL[i[0]],i[1]))
                 if i[0] in self.KeBoL:
                     result1[1].append((self.KeBoL[i[0]],i[1]))
-                    if j in new_layer:new_re[1].append((self.KeBoL[i[0]],i[1]))
+                    if j in new_layer:
+                        new_re[1].append((self.KeBoL[i[0]],i[1]))
                 else:
                     if i[0] in self.SeemL:
                         result1[1].append((self.SeemL[i[0]],i[1]))
-                        if j in new_layer:new_re[0].append((self.SeemL[i[0]],i[1]))
+                        if j in new_layer:
+                            new_re[0].append((self.SeemL[i[0]],i[1]))
                 if i[0] in self.PronL:
                     result1[2].append((self.PronL[i[0]],i[1]))
                 else:
@@ -227,8 +236,6 @@ class WordDetection():
         :return: 두 입력값의 유사도를 0과 1사이로 리턴합니다.
         """
         a = 0
-        if len(compare_word) != len(compare_badword):
-            raise "Cant_compare"
         for i in range(len(compare_word)):
             j = None
             for k in range(0,len(compare_word)):
@@ -244,7 +251,6 @@ class WordDetection():
         same = a / len(compare_badword)
         better = MakeBetter(len(compare_badword))
         return same ** better
-        
 
     def lime_compare(self, badwords : List, compare_word : List, cut_line : int = 0.9 , New : bool = False) -> List:
         """
@@ -278,8 +284,8 @@ class WordDetection():
                         b.append(in_list)
                         c[comparewordstart[1]] = (a,in_list)
         self.result = b
-        return b       
-                
+        return b
+
 if __name__ =='__main__':
     import time
     a = WordDetection()
@@ -297,7 +303,8 @@ if __name__ =='__main__':
         result += a.result
         print(f'{cutline}%이상 일치하는 부분만 출력\n')
         word = a.input
-        if len(result)==0: print(' > 감지된 욕설이 없습니다 <')
+        if len(result)==0:
+            print(' > 감지된 욕설이 없습니다 <')
         for j in result:
             word = word[:j[0]]+'*'*(j[1]-j[0]+1)+word[j[1]+1:]
             print(f' > {a.input[j[0]:j[1]+1]} < [{j[0]}~{j[1]}] :  ("{j[3]}"일 확률 {round(j[2]*100)}%)')
