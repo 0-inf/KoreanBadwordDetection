@@ -70,11 +70,11 @@ print("\n ==================== \n")
 
 [소스코드](https://github.com/Seol7523/KoreanWordDetection/blob/main/example/WordDetectionBot.py)
 
-[](https://github.com/Seol7523/KoreanWordDetection/blob/main/example/1.gif)
+![예시1](https://github.com/Seol7523/KoreanWordDetection/blob/main/example/1.gif)
 
-[](https://github.com/Seol7523/KoreanWordDetection/blob/main/example/2.gif)
+![예시2](https://github.com/Seol7523/KoreanWordDetection/blob/main/example/2.gif)
 
-[](https://github.com/Seol7523/KoreanWordDetection/blob/main/example/3.gif)
+![예시3](https://github.com/Seol7523/KoreanWordDetection/blob/main/example/3.gif)
 
 ## 궁금한게 있나요?
 
