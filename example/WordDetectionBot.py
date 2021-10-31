@@ -1,11 +1,11 @@
 import discord
-from WordDetection import WordDetection
+from word_detection import word_detection
 BOT_TOKEN = 'Your Bot Token'
 
 client = discord.Client()
-a = WordDetection()
-a.LoadData()
-a.LoadBadWordData()
+a = word_detection()
+a.load_data()
+a.load_badword_data()
 
 
 @client.event
@@ -17,10 +17,10 @@ async def on_ready():
 async def on_message(message):
     word = str(message.content)
     a.input=word
-    a.W2NR()
-    a.lime_compare(a.BwT , a.WTD[0] , 0.9)
+    a.text_modification()
+    a.lime_compare(a.token_badwords , a.token_detach_text[0] , 0.9)
     result = a.result
-    a.lime_compare(a.BwT , a.WTD[1] , 0.9)
+    a.lime_compare(a.new_token_badwords , a.token_detach_text[1] , 0.9 , True)
     result += a.result
     if len(result) == 0:
         return None

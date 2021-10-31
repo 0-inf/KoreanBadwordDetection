@@ -28,16 +28,16 @@
 
 ```python
 import time
-from WordDetection import WordDetection
-a = WordDetection()
-a.LoadData()
-a.LoadBadWordData()
+from word_detection import word_detection
+a = word_detection()
+a.load_data()
+a.load_badword_data()
 a.input='이곳에 테스트할 문장을 적어주세요!!'
 stime = time.time()
-a.W2NR()
-a.lime_compare(a.BwT , a.WTD[0] , 0.9,False)
+a.text_modification()
+a.lime_compare(a.token_badwords , a.token_detach_text[0] , 0.9,False)
 result = a.result
-a.lime_compare(a.NewBwT, a.WTD[1], 0.9,True)
+a.lime_compare(a.new_token_badwords, a.token_detach_text[1], 0.9,True)
 result += a.result
 print('90%이상 일치하는 부분만 출력\n')
 word = a.input

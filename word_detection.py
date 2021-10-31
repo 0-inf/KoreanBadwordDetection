@@ -13,7 +13,7 @@ korean_three = ['','ㄱ','ㄲ','ㄳ','ㄴ','ㄵ','ㄶ','ㄷ','ㄹ','ㄺ',
                 'ㄻ','ㄼ','ㄽ','ㄾ','ㄿ','ㅀ','ㅁ','ㅂ','ㅄ','ㅅ',
                 'ㅆ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ']
 
-def detachword(word : List,before : List) -> List:
+def detach_word(word : List,before : List) -> List:
     """
     한국어를 초성,중성,종성으로 분해해줍니다.
 
@@ -44,7 +44,7 @@ def detachword(word : List,before : List) -> List:
         result.append(word)
     return result
 
-def MakeBetter(x : int) -> int:
+def make_better(x : int) -> int:
     """
     글자수가 짧을수록 더 엄격하게 확률을 적용하기 위한 가중치 함수입니다.
 
@@ -54,7 +54,7 @@ def MakeBetter(x : int) -> int:
     return 0.1**((x-3)/10)+1.3
 
 
-class WordDetection():
+class word_detection():
     """
     파이썬 욕설 탐지 모듈입니다
     """
@@ -64,33 +64,33 @@ class WordDetection():
         초깃값을 설정합니다
         """
 
-        self.BaseL = {} #Base layer 데이터
-        self.SeemL = {} #Seem layer 데이터
-        self.KeBoL = {} #KeyBorad layer 데이터
-        self.PronL = {} #Pro layer 데이터
+        self.base_layer = {} #Base layer 데이터
+        self.seem_layer = {} #Seem layer 데이터
+        self.keyboard_layer = {} #KeyBorad layer 데이터
+        self.pronunciation_layer = {} #Pro layer 데이터
 
         self.input = '' # 입력된 문자열
-        self.WTD = [] #Token 화 , Detach 모두 완료된 입력 문자열의 리스트
-        self.BwNt = [] #Token화가 되지않은 badword의 리스트
-        self.BwT = [] #Token 화가 완료된 badword의 리스트
-        self.Result = [] #결과 값
-        self.NewBwNT = [] # Token화가 안된 문자열의 초성 리스트
-        self.NewBwT = [] # Token화가 된 문자열의 초성 리스트
+        self.token_detach_text = [] #Token 화 , Detach 모두 완료된 입력 문자열의 리스트
+        self.nontoken_badwords = [] #Token화가 되지않은 badword의 리스트
+        self.token_badwords = [] #Token 화가 완료된 badword의 리스트
+        self.result = [] #결과 값
+        self.new_nontoken_badwords = [] # Token화가 안된 문자열의 초성 리스트
+        self.new_token_badwords = [] # Token화가 된 문자열의 초성 리스트
 
-    def LoadData(self) -> None:
+    def load_data(self) -> None:
         """
         각 layer들의 데이터를 로딩해옵니다 (WDLD.txt로부터 읽어옵니다)
 
         :return: 아무것도 리턴하지 않습니다.
         """
         with open('WDLD.txt', 'rb') as f:
-            self.BaseL = pickle.load(f)
-            self.SeemL = pickle.load(f)
-            self.KeBoL = pickle.load(f)
-            self.PronL = pickle.load(f)
+            self.base_layer = pickle.load(f)
+            self.seem_layer = pickle.load(f)
+            self.keyboard_layer = pickle.load(f)
+            self.pronunciation_layer = pickle.load(f)
         return None
 
-    def LoadBadWordData(self,file : str ="Badwords.txt") -> None:
+    def load_badword_data(self,file : str ="Badwords.txt") -> None:
         """
         욕설 데이터를 불러오고 자동으로 저장합니다.
 
@@ -102,65 +102,64 @@ class WordDetection():
             line = f.readline()
             if not line:
                 break
-            self.AddBW(line[0:-1])
+            self.add_badwords(line[0:-1])
         f.close()
-        self.TokenBW()
+        self.tokenize_badwords()
         return None
 
 
 
-    def AddBW(self , badword : str) -> None:
+    def add_badwords(self , badword : str) -> None:
         """
-        BadWord를 입력받아 self.BwNt 또는 self.NewBwNT에 저장합니다.
+        BadWord를 입력받아 self.nontoken_badwords 또는 self.new_nontoken_badwords에 저장합니다.
 
         :param badword: 추가할 욕설입니다.
         :return: 아무것도 리턴하지 않습니다.
         """
-        if badword in self.BwNt:
+        if badword in self.nontoken_badwords:
             return None
         elif badword.startswith('#'):
             # '#'으로 시작되는 줄은 주석임
             return None
         elif badword.startswith('$'):
             # 이건 초성
-            if badword[1:] not in self.NewBwNT:
-                self.NewBwNT.append(badword[1:])
+            if badword[1:] not in self.new_nontoken_badwords:
+                self.new_nontoken_badwords.append(badword[1:])
             return None
         else:
-            if badword not in self.BwNt:
-                self.BwNt.append(badword)
+            if badword not in self.nontoken_badwords:
+                self.nontoken_badwords.append(badword)
         return None
 
-    def TokenBW(self) -> None:
+    def tokenize_badwords(self) -> None:
         """
-        self.BwNt와 self.NewBwNT에 저장되어있는 욕설들을 톤큰화합니다.
+        self.nontoken_badwords와 self.new_nontoken_badwords에 저장되어있는 욕설들을 톤큰화합니다.
 
         :return: 아무것도 리턴하지 않습니다.
         """
         result = []
-        for i in self.BwNt:
+        for i in self.nontoken_badwords:
             iList = []
             for j in range(0,len(i)):
-                Dj = detachword([i[j],j],iList)
+                Dj = detach_word([i[j],j],iList)
                 for k in range(0,len(Dj)):
-                    if Dj[k][0] in self.BaseL:
-                        Dj[k][0] = self.BaseL[Dj[k][0]]
+                    if Dj[k][0] in self.base_layer:
+                        Dj[k][0] = self.base_layer[Dj[k][0]]
                         iList.append(Dj[k])
             result.append(iList)
-        self.BwT = result
+        self.token_badwords = result
         result = []
 
-        for i in self.NewBwNT:
+        for i in self.new_nontoken_badwords:
             ilist = []
             for j in range(0,len(i)):
-                ilist.append([self.BaseL[i[j]],j])
+                ilist.append([self.base_layer[i[j]],j])
             result.append(ilist)
-        self.NewBwT = result
-        return None
+        self.new_token_badwords = result
 
-    def W2NR(self) -> None:
+    def text_modification(self) -> None:
         """
-        self.input에 저장된 문자열을 자동으로 처리하여 self.WTD에 저장합니다
+        self.input에 저장된 문자열을 자동으로 처리하여 self.token_detach_text에 저장합니다
 
         :return: 아무것도 리턴하지 않습니다.
         """
@@ -181,7 +180,7 @@ class WordDetection():
         result1 = []
         new_layer=[]  #초성의 번호
         for i in range(0,len(result)):
-            de = detachword(result[i],result1)
+            de = detach_word(result[i],result1)
             if len(de)==1 and de[0][0] not in korean_two:
                 new_layer.append(len(result1))
             for j in de:
@@ -191,55 +190,55 @@ class WordDetection():
         new_re = [[],[],[]]
         for j in range(0,len(result)):
             i = result[j]
-            if i[0] in self.SeemL or i[0] in self.KeBoL or i[0] in self.PronL:
-                if i[0] in self.SeemL:
-                    result1[0].append((self.SeemL[i[0]],i[1]))
+            if i[0] in self.seem_layer or i[0] in self.keyboard_layer or i[0] in self.pronunciation_layer:
+                if i[0] in self.seem_layer:
+                    result1[0].append((self.seem_layer[i[0]],i[1]))
                     if j in new_layer:
-                        new_re[0].append((self.SeemL[i[0]],i[1]))
+                        new_re[0].append((self.seem_layer[i[0]],i[1]))
                 else:
-                    if i[0] in self.PronL:
-                        result1[0].append((self.PronL[i[0]],i[1]))
-                if i[0] in self.KeBoL:
-                    result1[1].append((self.KeBoL[i[0]],i[1]))
+                    if i[0] in self.pronunciation_layer:
+                        result1[0].append((self.pronunciation_layer[i[0]],i[1]))
+                if i[0] in self.keyboard_layer:
+                    result1[1].append((self.keyboard_layer[i[0]],i[1]))
                     if j in new_layer:
-                        new_re[1].append((self.KeBoL[i[0]],i[1]))
+                        new_re[1].append((self.keyboard_layer[i[0]],i[1]))
                 else:
-                    if i[0] in self.SeemL:
-                        result1[1].append((self.SeemL[i[0]],i[1]))
+                    if i[0] in self.seem_layer:
+                        result1[1].append((self.seem_layer[i[0]],i[1]))
                         if j in new_layer:
-                            new_re[0].append((self.SeemL[i[0]],i[1]))
-                if i[0] in self.PronL:
-                    result1[2].append((self.PronL[i[0]],i[1]))
+                            new_re[0].append((self.seem_layer[i[0]],i[1]))
+                if i[0] in self.pronunciation_layer:
+                    result1[2].append((self.pronunciation_layer[i[0]],i[1]))
                 else:
-                    if i[0] in self.SeemL:
-                        result1[2].append((self.SeemL[i[0]],i[1]))
-            if i[0] in self.BaseL:
-                result1[0].append((self.BaseL[i[0]],i[1]))
-                result1[2].append((self.BaseL[i[0]],i[1]))
-                result1[3].append((self.BaseL[i[0]],i[1]))
+                    if i[0] in self.seem_layer:
+                        result1[2].append((self.seem_layer[i[0]],i[1]))
+            if i[0] in self.base_layer:
+                result1[0].append((self.base_layer[i[0]],i[1]))
+                result1[2].append((self.base_layer[i[0]],i[1]))
+                result1[3].append((self.base_layer[i[0]],i[1]))
                 if j in new_layer:
-                    new_re[0].append((self.BaseL[i[0]],i[1]))
-                    new_re[1].append((self.BaseL[i[0]],i[1]))
-                    new_re[2].append((self.BaseL[i[0]],i[1]))
+                    new_re[0].append((self.base_layer[i[0]],i[1]))
+                    new_re[1].append((self.base_layer[i[0]],i[1]))
+                    new_re[2].append((self.base_layer[i[0]],i[1]))
             else:
                 pass
         result = result1
-        self.WTD = [result,new_re]
+        self.token_detach_text = [result,new_re]
         return None
 
-    def word_comparing(self , compare_word : List, compare_badword : List) -> int:
+    def word_comparing(self , check_text : List, compare_badword : List) -> int:
         """
-        compare_word에 입력된 값과 compare_badword의 유사도를 비교합니다.
+        check_text에 입력된 값과 compare_badword의 유사도를 비교합니다.
 
-        :param compare_word: 토큰화가 된 확인할 문장의 일부분입니다.
+        :param check_text: 토큰화가 된 확인할 문장의 일부분입니다.
         :param compare_badword: 토큰화가 된 비교할 욕설입니다.
         :return: 두 입력값의 유사도를 0과 1사이로 리턴합니다.
         """
         a = 0
-        for i in range(len(compare_word)):
+        for i in range(len(check_text)):
             j = None
-            for k in range(0,len(compare_word)):
-                if str(compare_word[i][0])[0:2] == str(compare_badword[k][0])[0:2]:
+            for k in range(0,len(check_text)):
+                if str(check_text[i][0])[0:2] == str(compare_badword[k][0])[0:2]:
                     if j is None:
                         j = k
                     elif abs(j-i) > abs(k-i):
@@ -247,17 +246,17 @@ class WordDetection():
                     else:
                         pass
             if j is not None:
-                a += 0.1 / pow(2, (abs(j - i)))*(10-abs(int(str(compare_word[i][0])[2])-int(str(compare_badword[j][0])[2])))
+                a += 0.1 / pow(2, (abs(j - i)))*(10-abs(int(str(check_text[i][0])[2])-int(str(compare_badword[j][0])[2])))
         same = a / len(compare_badword)
-        better = MakeBetter(len(compare_badword))
+        better = make_better(len(compare_badword))
         return same ** better
 
-    def lime_compare(self, badwords : List, compare_word : List, cut_line : int = 0.9 , New : bool = False) -> List:
+    def lime_compare(self, badwords : List, check_text : List, cut_line : int = 0.9 , new : bool = False) -> List:
         """
-        compare_word와 badwords를 비교하여 욕설인 부분과 그 퍼센트를 리턴합니다
+        check_text와 badwords를 비교하여 욕설인 부분과 그 퍼센트를 리턴합니다
 
-        :param badwords: 토큰화된 욕설 데이터입니다. self.BwT 또는 self.NewBwT를 입력하세요
-        :param compare_word: 토큰화된 문자열 데이터입니다. self.WTD[0] 또는 self.WTD[1]이 입력됩니다.
+        :param badwords: 토큰화된 욕설 데이터입니다. self.token_badwords 또는 self.new_token_badwords를 입력하세요
+        :param check_text: 토큰화된 문자열 데이터입니다. self.token_detach_text[0] 또는 self.token_detach_text[1]이 입력됩니다.
         :param cut_line: 확률이 몇 이상이여야 욕설로 인식할지의 기준입니다. (0에서 1사이)
         :param New: 초성 검사 모드로 할지 여부입니다.
         :return: 욕설검사 결과를 리턴합니다.
@@ -265,17 +264,17 @@ class WordDetection():
 
         b = []
         c={}
-        for cw in compare_word:
+        for cw in check_text:
             for i in range(0,len(badwords)):
                 badi = badwords[i]
                 for j in range(len(cw)-len(badi)+1):
                     a = self.word_comparing(cw[j:(j+len(badi))],badi)
                     comparewordstart = cw[j]
                     comparewordend = cw[(j+len(badi))-1]
-                    if New:
-                        in_list = (comparewordstart[1],comparewordend[1],a,self.NewBwNT[i])
+                    if new:
+                        in_list = (comparewordstart[1],comparewordend[1],a,self.new_nontoken_badwords[i])
                     else:
-                        in_list = (comparewordstart[1],comparewordend[1],a,self.BwNt[i])
+                        in_list = (comparewordstart[1],comparewordend[1],a,self.nontoken_badwords[i])
                     if a>=cut_line and comparewordstart[1] not in c:
                         c[comparewordstart[1]] = (a,in_list)
                         b.append(in_list)
@@ -288,18 +287,18 @@ class WordDetection():
 
 if __name__ =='__main__':
     import time
-    a = WordDetection()
-    a.LoadData()
-    a.LoadBadWordData()
+    a = word_detection()
+    a.load_data()
+    a.load_badword_data()
     cutline = int(input("몇 %이상인 것만 출력할까요?"))
-    sf = 3
-    while sf!=0:
+    EXECUTION = 3
+    while EXECUTION!=0:
         a.input=input('필터링할 문장 입력!!')
         stime = time.time()
-        a.W2NR()
-        a.lime_compare(a.BwT , a.WTD[0] , cutline/100,False)
+        a.text_modification()
+        a.lime_compare(a.token_badwords , a.token_detach_text[0] , cutline/100,False)
         result = a.result
-        a.lime_compare(a.NewBwT, a.WTD[1], cutline/100,True)
+        a.lime_compare(a.new_token_badwords, a.token_detach_text[1], cutline/100,True)
         result += a.result
         print(f'{cutline}%이상 일치하는 부분만 출력\n')
         word = a.input
@@ -311,4 +310,4 @@ if __name__ =='__main__':
         print('\n소요시간 : ',time.time()-stime,'초')
         print('필터링된 문장 : ',word)
         print("\n ==================== \n")
-        sf-=1
+        EXECUTION-=1
