@@ -1,4 +1,4 @@
-# KoreanWordDetection
+# KoreanBadwordDetection
 
 한국어 욕설 탐지 파이썬 모듈입니다.
 
@@ -20,7 +20,7 @@
 
 ### 1. 욕설 파일 만들기
 
-[예시 파일](https://github.com/Seol7523/KoreanWordDetection/blob/main/Badwords.txt)
+[예시 파일](https://github.com/Seol7523/KoreanBadwordDetection/blob/main/Badwords.txt)
 
 위 예시파일에 적혀있는 작성법을 지켜서 욕설 리스트를 만들어주세요. 꼭 지킬 필요는 없지만 파일의 이름은 Badwords.txt로 하시길 권장드립니다.
 
@@ -68,13 +68,13 @@ print("\n ==================== \n")
 
 이 모듈을 이용하여 만든 디스코드 봇입니다.
 
-[소스코드](https://github.com/Seol7523/KoreanWordDetection/blob/main/example/WordDetectionBot.py)
+[소스코드](https://github.com/Seol7523/KoreanBadwordDetection/blob/main/example/WordDetectionBot.py)
 
-![예시1](https://github.com/Seol7523/KoreanWordDetection/blob/main/example/1.gif)
+![예시1](https://github.com/Seol7523/KoreanBadwordDetection/blob/main/example/1.gif)
 
-![예시2](https://github.com/Seol7523/KoreanWordDetection/blob/main/example/2.gif)
+![예시2](https://github.com/Seol7523/KoreanBadwordDetection/blob/main/example/2.gif)
 
-![예시3](https://github.com/Seol7523/KoreanWordDetection/blob/main/example/3.gif)
+![예시3](https://github.com/Seol7523/KoreanBadwordDetection/blob/main/example/3.gif)
 
 ## 궁금한게 있나요?
 
