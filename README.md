@@ -1,8 +1,6 @@
 # KoreanBadwordDetection
 
-한국어 욕설 탐지 파이썬 모듈입니다.
-
-> 주의사항 : 현재 이 모듈은 재작성 중입니다. 최적화와 여러 문제 개선을 통해 다시 돌아오겠습니다
+한국어 욕설 탐지 파이썬 모듈입니다. 
 
 ## 개발 목표
 
@@ -14,15 +12,13 @@
 금칙어 기반의 방식은 어떨까요? 여긴 새로운 욕설의 추가도 쉽고 알고리즘도 단순합니다. 하지만 유저들의 채팅 데이터는 경우가 좀 다르죠. 많은 오타와 수많은 우회법이 있기 때문입니다. 예를 들어볼까요?
 우리는 '시간'이라는 말이 욕설이라고 가정해봅시다. 그럼 금칙어리스트에 '시간','sigan','tlrks','ㅅ1간','^ㅣ간' 등의 말들도 추가해줘야합니다. 이런방식으론 실시간으로 대응하기 쉽지 않습니다.
 
-그래서 저는 이 두가지 방식의 장단점을 혼합하고 싶었습니다. **쉽고 빠른 욕설의 추가와 수정**이 가능하고 **다양한 우회방식에도 욕을 잘 잡아내는** 욕설탐지모듈을 만들려 했습니다. '***더 적게 더 많이***' 라는 개발목표로 계속해서 개발하고 있습니다.
+그래서 저는 이 두가지 방식의 장단점을 혼합하고 싶었습니다. **쉽고 빠른 욕설의 추가와 수정**이 가능하고 **다양한 우회방식에도 욕을 잘 잡아내는** 욕설탐지모듈을 만들려 했습니다. '***더 적게 더 많이***' 라는 개발목표로 개발했었습니다.
 
 ## 사용방법
 
-> 주의사항 : 현재 이 모듈은 **개발단계**입니다. 개발이 진행됨에 따라 사용방법이 변할수있습니다.
-
 ### 1. 욕설 파일 만들기
 
-[예시 파일](https://github.com/Seol7523/KoreanBadwordDetection/blob/main/Badwords.txt)
+[예시 파일](https://github.com/seolmango/KoreanBadwordDetection/blob/main/Badwords.txt)
 
 위 예시파일에 적혀있는 작성법을 지켜서 욕설 리스트를 만들어주세요. 꼭 지킬 필요는 없지만 파일의 이름은 Badwords.txt로 하시길 권장드립니다.
 
@@ -70,13 +66,17 @@ print("\n ==================== \n")
 
 이 모듈을 이용하여 만든 디스코드 봇입니다.
 
-[소스코드](https://github.com/Seol7523/KoreanBadwordDetection/blob/main/example/WordDetectionBot.py)
+[소스코드](https://github.com/seolmango/KoreanBadwordDetection/blob/main/example/WordDetectionBot.py)
 
-![예시1](https://github.com/Seol7523/KoreanBadwordDetection/blob/main/example/1.gif)
+![예시1](https://github.com/seolmango/KoreanBadwordDetection/blob/main/example/1.gif)
 
-![예시2](https://github.com/Seol7523/KoreanBadwordDetection/blob/main/example/2.gif)
+![예시2](https://github.com/seolmango/KoreanBadwordDetection/blob/main/example/2.gif)
 
-![예시3](https://github.com/Seol7523/KoreanBadwordDetection/blob/main/example/3.gif)
+![예시3](https://github.com/seolmango/KoreanBadwordDetection/blob/main/example/3.gif)
+
+## 결론
+
+개발이 종료된 시점에서 결론을 말하자면, 이 프로젝트는 **실패**입니다. 욕설의 추가는 쉬웠지만 정확도에서 한계를 보였습니다.
 
 ## 궁금한게 있나요?
 
